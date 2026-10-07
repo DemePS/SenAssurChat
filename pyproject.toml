@@ -1,0 +1,41 @@
+[project]
+name = "senassurchat"
+version = "0.1.0"
+description = "A Wolof voice agent: Wolof speech in, an English agent (CodeAgent), Wolof speech out. A test page and WhatsApp."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    # The agent engine, pinned to a commit of main (0.6.0 code; move to a tag once one exists).
+    "codeagent @ git+https://github.com/DemePS/CodeAgent.git@ae72a483a17dd0c602cf3533d5b6da26855fcdae",
+    "python-dotenv>=1.0",   # a .env file is read before the engines are chosen
+    "fonttools>=4.40",   # pypdf needs it to read the encoding of CFF fonts (else it warns on every page)
+    "fastapi>=0.110",
+    "uvicorn>=0.30",
+    "httpx>=0.27",   # WhatsApp Cloud API calls
+    "boto3>=1.34",   # the documents live in S3 (or an S3-compatible store)
+]
+
+[project.optional-dependencies]
+# Oolel-Voices through Soynade's public demo Space (WAXAL_TTS=oolel-demo): only a web client, no model
+demo = ["gradio_client>=1.0"]
+# The agent browses the allowed websites (WAXAL_LINK_DOMAINS) in a headless browser: after installing, run `playwright install chromium`
+browser = ["playwright>=1.40"]
+
+[project.scripts]
+senassurchat = "waxal_agent.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "moto[s3]>=5"]   # moto: an S3 stand-in for the tests
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true  # the git dependency above
+
+[tool.hatch.build.targets.wheel]
+packages = ["waxal_agent"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
