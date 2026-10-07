@@ -24,19 +24,21 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /app
 COPY pyproject.toml README.md ./
-COPY waxal_agent ./waxal_agent
-COPY scripts ./scripts
+COPY senassurchat ./senassurchat
+# The library comes from git (the local folder ../WaxalAgent used while developing is outside this build context).
+# Pin a commit for a reproducible image: --build-arg WAXAL_AGENT="waxal-agent[server] @ git+https://github.com/DemePS/WaxalAgent.git@<commit>"
+ARG WAXAL_AGENT="waxal-agent[server] @ git+https://github.com/DemePS/WaxalAgent.git"
 # The library baked into the image: the documents of this deployment (the domain: finance, medicine...). Put them in
 # ./library (or another folder, --build-arg LIBRARY=customers/acme/docs) before building. Per-person documents and
 # memory stay outside the image, in the mounted data/ volume.
 ARG LIBRARY=library
 COPY ${LIBRARY}/ /app/library/
 ENV WAXAL_DOCUMENTS=/app/library
-RUN uv venv /opt/venv && . /opt/venv/bin/activate && uv pip install .
+RUN uv venv /opt/venv && . /opt/venv/bin/activate && uv pip install "$WAXAL_AGENT" && uv pip install --no-deps .
 # The agent can browse the allowed websites (WAXAL_LINK_DOMAINS) in a headless browser. It adds a Chromium (a few hundred MB) to the image:
 #   docker compose build --build-arg WITH_BROWSER=1       (not tested here: there is no Docker daemon in my environment)
 ARG WITH_BROWSER=0
-RUN if [ "$WITH_BROWSER" = "1" ]; then . /opt/venv/bin/activate && uv pip install ".[browser]" && playwright install --with-deps chromium; fi
+RUN if [ "$WITH_BROWSER" = "1" ]; then . /opt/venv/bin/activate && uv pip install "waxal-agent[browser] @ git+https://github.com/DemePS/WaxalAgent.git" && playwright install --with-deps chromium; fi
 ENV PATH="/opt/venv/bin:$PATH" PYTHONUNBUFFERED=1
 
 VOLUME ["/app/data"]

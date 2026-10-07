@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SenAssurChat</title>
+<style>
+  :root {
+    /* Calm blue/teal brand + neutrals. Senegal identity: the flag stripe (--sn-*) under the header and the gold star. */
+    --bg:#f4f7fa; --fg:#0f1f2e; --muted:#51616f; --line:#dbe3ea; --card:#fff;
+    --brand:#0b6e8a; --brand-deep:#0b2a3c; --gold:#f2b705; --red:#c8202b; --danger:#b3261e;
+    --soft:#e3f0f4; --on-brand:#fff; --shadow:0 1px 2px rgba(11,42,60,.06), 0 4px 16px rgba(11,42,60,.07);
+    --sn-green:#00853f; --sn-yellow:#fdef42; --sn-red:#e31b23;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0b141b; --fg:#e6edf3; --muted:#93a4b3; --line:#22323f; --card:#121e27;
+            --brand:#4cc3dd; --brand-deep:#08202d; --gold:#f2b705; --red:#c8202b; --danger:#f2b8b5;
+            --soft:#16303b; --on-brand:#04222c; --shadow:none; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+
+  header { background:var(--brand-deep); color:#fff; position:relative; }
+  header::after { content:""; position:absolute; left:0; right:0; bottom:0; height:5px;
+    background:linear-gradient(90deg, var(--sn-green) 0 33.3%, var(--sn-yellow) 33.3% 66.6%, var(--sn-red) 66.6% 100%); }
+  .head { max-width:680px; margin:0 auto; padding:22px 16px 26px; display:flex; gap:14px; align-items:center; }
+  .logo { flex:none; width:56px; height:56px; border-radius:14px; background:#0b8aa8; color:#fff; display:grid; place-items:center; }
+  .logo svg { width:32px; height:32px; }
+  h1 { font-size:1.35rem; margin:0; letter-spacing:.01em; }
+  .tag { margin:2px 0 0; color:#c5d9e3; font-size:.95rem; }
+
+  main { max-width:680px; margin:0 auto; padding:22px 16px 48px; }
+  .intro { color:var(--muted); margin:0 0 14px; }
+  .topics { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; padding:0; list-style:none; }
+  .topics li { background:var(--soft); color:var(--fg); border:1px solid var(--line); border-radius:999px; padding:5px 12px; font-size:.86rem; }
+
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px; box-shadow:var(--shadow); }
+  #talk { width:100%; padding:22px; font:inherit; font-size:1.1rem; font-weight:600; border-radius:14px; border:0;
+          background:var(--brand); color:var(--on-brand); cursor:pointer; touch-action:none; user-select:none;
+          display:flex; align-items:center; justify-content:center; gap:10px; transition:background .15s, transform .1s; }
+  #talk::before { content:""; width:14px; height:14px; border-radius:50%; background:var(--gold); flex:none; }
+  #talk:hover:not(:disabled) { filter:brightness(1.05); }
+  #talk.rec { background:var(--red); color:#fff; transform:scale(.99); }
+  #talk.rec::before { background:#fff; animation:pulse 1s infinite; }
+  #talk:disabled { opacity:.6; cursor:default; }
+  @keyframes pulse { 50% { opacity:.3; } }
+  [hidden] { display:none !important; }
+  .only { display:block; margin:12px 0 0; color:var(--muted); font-size:.9rem; } .only input { margin-right:6px; accent-color:var(--brand); }
+  form { display:flex; gap:8px; margin:14px 0 0; }
+  input[type=text] { flex:1; min-width:0; padding:11px 12px; border-radius:10px; border:1px solid var(--line); background:var(--bg); color:var(--fg); font:inherit; }
+  input[type=text]:focus { outline:2px solid var(--brand); outline-offset:1px; }
+  button.small { padding:10px 16px; border-radius:10px; border:1px solid var(--brand); background:transparent; color:var(--brand); font:inherit; font-weight:600; cursor:pointer; }
+  button.small:hover { background:var(--soft); }
+  #status { color:var(--muted); min-height:1.4em; margin:14px 2px 0; }
+  #cancel { margin:8px 0 0; border-color:var(--danger); color:var(--danger); }
+
+  .turn { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:12px; padding:12px 14px; margin:14px 0; box-shadow:var(--shadow); }
+  .label { font-size:.74rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); margin-top:10px; }
+  .label:first-child { margin-top:0; } .turn p { margin:2px 0 0; white-space:pre-wrap; }
+  .turn a { color:var(--brand); font-weight:600; }
+  .note { color:var(--danger); font-size:.9rem; } audio { width:100%; margin-top:10px; }
+  footer { color:var(--muted); font-size:.8rem; text-align:center; margin-top:32px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <div class="logo" aria-hidden="true">
+      <!-- "shield-check" from Lucide (https://lucide.dev, ISC licence) -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+    </div>
+    <div>
+      <h1>SenAssurChat</h1>
+      <p class="tag" id="tag">Votre conseiller en assurance, en wolof</p>
+    </div>
+  </div>
+</header>
+<main>
+  <p class="intro" id="intro"></p>
+  <ul class="topics" aria-label="Sujets">
+    <li>Code des assurances (CIMA)</li><li>Déclarer un sinistre</li><li>Comprendre mon contrat</li><li>Souscrire une assurance</li>
+  </ul>
+  <div class="panel">
+    <button id="talk" type="button">Maintenir pour parler</button>
+    <label class="only" id="onlyRow"><input type="checkbox" id="only"> Transcription seule : afficher uniquement ce qui a été entendu (sans traduction ni assistant)</label>
+    <form id="typed"><input type="text" id="line" placeholder="ou écrivez en wolof ici" autocomplete="off"><button class="small">Envoyer</button></form>
+  </div>
+  <div id="status" role="status"></div>
+  <button id="cancel" class="small" type="button" hidden>Arrêter</button>
+  <div id="turns"></div>
+  <footer>Les réponses s'appuient sur le Code des assurances et ne remplacent pas l'avis d'un professionnel.</footer>
+</main>
+<script>
+const token = new URLSearchParams(location.search).get('token') || '';
+const headers = (extra = {}) => ({ ...(token ? { 'x-token': token } : {}), ...extra });
+const talk = document.getElementById('talk'), statusEl = document.getElementById('status'), turns = document.getElementById('turns');
+let recorder = null, chunks = [], stream = null, startedAt = 0, discard = false, holding = false;
+const MIN_MS = 800; // a click is not a message
+const TALK_LABEL = 'Maintenir pour parler';
+
+// Sound: an AudioContext started by the person's own click keeps playing when the tab is in the background (an <audio>
+// element started later by the page is often blocked there). If it cannot play, the tab title says the answer is ready and
+// the audio plays when the tab is shown again.
+let audioCtx = null, pendingAudio = null;
+const baseTitle = document.title;
+function unlockAudio() {
+  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch { /* falls back to <audio> */ }
+}
+async function playElement(el) {
+  try { await el.play(); }
+  catch { pendingAudio = el; if (document.hidden) document.title = '🔊 Réponse prête - ' + baseTitle; }
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { document.title = baseTitle;
+  if (pendingAudio) { pendingAudio.play().catch(() => {}); pendingAudio = null; } } });
+
+// The server's fixed messages are in English (they are also used by WhatsApp and the logs): shown in French here.
+const FR = { 'Forbidden': 'Accès refusé (vérifiez le jeton dans l’adresse).', 'No audio received.': 'Aucun son reçu.',
+  'The recording is too long.': 'L’enregistrement est trop long.', 'nothing was heard': 'rien n’a été entendu',
+  'the agent gave no answer': 'l’assistant n’a pas donné de réponse', 'No voice.': 'Pas de voix.' };
+const fr = text => FR[text] || (text.startsWith('No voice: ') ? 'Pas de voix : ' + text.slice(10) : text);
+
+// What a turn shows depends on the server (WAXAL_TRANSLATION, WAXAL_REPLY_LANGUAGE), which /api/health tells: the language of the agent
+// (never assumed here) and whether the Wolof is translated. With translation: what was heard in Wolof, what the agent understood, its answer,
+// its answer in Wolof. Without: only what the agent understood and its answer, both in that language.
+const LANGS = { fr: 'français', en: 'anglais', wo: 'wolof' };
+let mode = { translating: true, language: 'en' };
+function applyMode() {
+  const L = LANGS[mode.language] || mode.language, tr = mode.translating;
+  document.getElementById('intro').textContent = tr
+    ? `Maintenez le bouton et parlez en wolof. Vous verrez ce qui a été entendu, ce que l'assistant a compris en ${L}, et sa réponse, lue à voix haute en wolof.`
+    : `Maintenez le bouton et parlez en ${L}. Vous verrez ce que l'assistant a compris, puis sa réponse, lue à voix haute.`;
+  document.getElementById('tag').textContent = 'Votre conseiller en assurance' + (tr ? ', en wolof' : '');
+  document.getElementById('line').placeholder = `ou écrivez en ${tr ? 'wolof' : L} ici`;
+  document.getElementById('onlyRow').hidden = !tr && mode.language !== 'wo';  // "transcription only" is about recognising Wolof
+}
+applyMode();
+fetch('/api/health', { headers: headers() }).then(r => r.ok ? r.json() : null)
+  .then(h => { if (h && typeof h.translating === 'boolean') { mode = { translating: h.translating, language: h.language || mode.language }; applyMode(); } })
+  .catch(() => {});
+
+let controller = null;
+const cancelBtn = document.getElementById('cancel');
+function working(on) { talk.disabled = on; cancelBtn.hidden = !on; }
+cancelBtn.addEventListener('click', () => { if (controller) controller.abort(); fetch('/api/stop', { method: 'POST', headers: headers() }).catch(() => {});
+  statusEl.textContent = 'Arrêté.'; });
+
+// The voice of a streamed turn. Each piece of the answer is its own audio file: the chunks of one piece (audio/mpeg) are gathered until the next
+// piece starts (end()), then played as one clip; whole WAV clips are played as they come. The clips play one after the other. (They are not appended
+// to one MediaSource buffer: several separate MP3 files in one buffer cannot be decoded by every browser, e.g. Firefox on Linux.)
+class Voice {
+  constructor(onReady) { this.onReady = onReady; this.el = null; this.group = []; this.media = null; this.clips = []; this.next = 0; }
+  push(media, b64) {
+    const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    if (!bytes.length) { this.flush(); return; }   // the end of one audio file
+    if (!this.el) { this.el = document.createElement('audio'); this.el.controls = true; this.el.addEventListener('ended', () => this.playNext()); this.onReady(this.el); }
+    if (media === 'audio/wav') { this.flush(); this.add(media, [bytes]); }
+    else { if (this.media && this.media !== media) this.flush(); this.media = media; this.group.push(bytes); }
+  }
+  add(media, parts) {
+    this.clips.push(URL.createObjectURL(new Blob(parts, { type: media })));
+    if (this.next === this.clips.length - 1 && (this.el.ended || !this.el.src)) this.playNext();
+  }
+  flush() { if (this.group.length) { this.add(this.media, this.group); this.group = []; } }  // the piece is complete
+  playNext() { if (this.next < this.clips.length) { this.el.src = this.clips[this.next++]; playElement(this.el); } }
+}
+
+// A turn is streamed (/api/turn/stream, /api/text/stream): JSON lines, each shown as it arrives: what was heard, the agent's answer, each piece of the
+// Wolof answer once translated, and the voice of each piece while the next ones are still being translated.
+async function send(path, body, type) {
+  working(true); statusEl.textContent = 'Traitement en cours…'; controller = new AbortController();
+  const div = document.createElement('div'); div.className = 'turn';
+  let wolofLine = null, answerLine = null, voice = null;
+  const full = mode.translating, L = LANGS[mode.language] || mode.language;  // the layout of this turn (see applyMode)
+  const line = (label, text, cls) => { if (!text) return null;
+    const l = document.createElement('div'); l.className = 'label'; l.textContent = label;
+    const p = document.createElement('p'); p.textContent = text; if (cls) p.className = cls; div.append(l, p); return p; };
+  const links = list => { if (!(list || []).length) return; const l = document.createElement('div'); l.className = 'label'; l.textContent = 'Liens';
+    const p = document.createElement('p');
+    list.forEach((k, i) => { if (i) p.append(' · '); const a = document.createElement('a'); a.href = k.url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = k.label; p.append(a); });
+    div.append(l, p); };
+  const handle = e => {
+    if (e.event === 'heard') {
+      if (full) { line('Entendu (wolof)', e.wolof); line(`Compris (${L})`, e.english); } else line(`Compris (${L})`, e.wolof);  // without translation, what was recognised is what the agent reads
+      turns.prepend(div); statusEl.textContent = "L'assistant réfléchit…"; }
+    else if (e.event === 'answer') { answerLine = line(`Réponse (${L})`, e.reply_english); links(e.links); statusEl.textContent = full ? 'Traduction en cours…' : ''; }
+    else if (e.event === 'text') { if (voice) voice.flush();
+      if (!full) { if (!answerLine) answerLine = line(`Réponse (${L})`, e.wolof); }  // the text is the answer itself (already shown), except for a message such as "nothing was heard"
+      else if (wolofLine) wolofLine.textContent += ' ' + e.wolof; else wolofLine = line('Réponse (wolof)', e.wolof); }
+    else if (e.event === 'audio') { voice = voice || new Voice(el => { div.append(el); playElement(el); }); voice.push(e.media, e.data); statusEl.textContent = ''; }
+    else if (e.event === 'note') line('Remarque', fr(e.text), 'note');
+    else if (e.event === 'done') { if (!wolofLine && !answerLine && e.reply_english) line(`Réponse (${L})`, e.reply_english);
+      (e.notes || []).filter(n => !n.startsWith('No voice')).forEach(n => line('Remarque', fr(n), 'note')); if (voice) voice.flush(); statusEl.textContent = ''; }
+    else if (e.event === 'error') { statusEl.textContent = fr(e.message); }
+    else if (!e.event && e.wolof !== undefined) { line(full ? 'Entendu (wolof)' : `Compris (${L})`, e.wolof); turns.prepend(div); }  // /api/transcribe: one plain JSON answer
+  };
+  try {
+    const res = await fetch(path, { method: 'POST', signal: controller.signal, headers: headers({ 'content-type': type }), body });
+    if (!res.ok) { const data = await res.json().catch(() => ({})); throw new Error(fr(typeof data.detail === 'string' ? data.detail : '') || `Erreur ${res.status}`); }
+    const reader = res.body.getReader(), decoder = new TextDecoder(); let rest = '';
+    for (;;) { const { done, value } = await reader.read(); if (done) break;
+      rest += decoder.decode(value, { stream: true }); const lines = rest.split('\n'); rest = lines.pop();
+      lines.filter(Boolean).forEach(l => handle(JSON.parse(l))); }
+    if (rest.trim()) handle(JSON.parse(rest));
+  } catch (e) { if (e.name !== 'AbortError') statusEl.textContent = e.message; else if (voice) voice.flush(); } finally { working(false); controller = null; }
+}
+
+
+async function start() {
+  if (recorder) return;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch { statusEl.textContent = "Le micro n'est pas disponible (autorisez-le, et utilisez https ou localhost)."; return; }
+  if (!holding) { stream.getTracks().forEach(t => t.stop()); stream = null; return; } // released before the microphone was ready: a click
+  chunks = []; recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = () => { stream.getTracks().forEach(t => t.stop()); const blob = new Blob(chunks, { type: recorder.mimeType }); recorder = null;
+    if (discard) { statusEl.textContent = "Annulé : rien n'a été envoyé."; return; }
+    if (Date.now() - startedAt < MIN_MS || blob.size < 1000) { statusEl.textContent = "Trop court, rien n'a été envoyé : maintenez le bouton pendant que vous parlez."; return; }
+    send(document.getElementById('only').checked ? '/api/transcribe' : '/api/turn/stream', blob, blob.type || 'application/octet-stream'); };
+  discard = false; startedAt = Date.now();
+  recorder.start(); talk.classList.add('rec'); talk.textContent = 'À l’écoute… relâchez pour envoyer, glissez hors du bouton pour annuler'; statusEl.textContent = '';
+}
+function stop(cancel) { discard = !!cancel; if (recorder && recorder.state === 'recording') recorder.stop(); talk.classList.remove('rec'); talk.textContent = TALK_LABEL; }
+
+talk.addEventListener('pointerdown', e => { e.preventDefault(); unlockAudio(); holding = true; start(); });
+talk.addEventListener('pointerup', () => { holding = false; stop(false); });
+['pointerleave', 'pointercancel'].forEach(t => talk.addEventListener(t, () => { holding = false; stop(true); }));
+document.getElementById('typed').addEventListener('submit', e => { e.preventDefault();
+  unlockAudio(); const line = document.getElementById('line'); const text = line.value.trim(); if (!text) return; line.value = '';
+  send('/api/text/stream', JSON.stringify({ text }), 'application/json'); });
+</script>
+</body>
+</html>
