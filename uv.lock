@@ -1405,9 +1405,6 @@ dependencies = [
 browser = [
     { name = "waxal-agent", extra = ["browser"] },
 ]
-demo = [
-    { name = "waxal-agent" },
-]
 
 [package.dev-dependencies]
 dev = [
@@ -1417,10 +1414,9 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "waxal-agent", extras = ["browser"], marker = "extra == 'browser'", editable = "../WaxalAgent" },
-    { name = "waxal-agent", extras = ["demo"], marker = "extra == 'demo'", editable = "../WaxalAgent" },
     { name = "waxal-agent", extras = ["server"], editable = "../WaxalAgent" },
 ]
-provides-extras = ["demo", "browser"]
+provides-extras = ["browser"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8" }]
