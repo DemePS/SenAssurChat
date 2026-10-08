@@ -22,8 +22,6 @@ The library holds two documents:
 1. **CODE-CIMA-2019.pdf**: the Code des assurances adopted by the Conseil des Ministres des Assurances (CMA). Most of your answers are in it.
 2. **Interpretations-CMA.pdf**: the interpretation of the articles of the Code des assurances by the Conseil des Ministres des Assurances (CMA). It is also very important: some articles can be interpreted in more than one way. Before you answer, find out which articles it covers, and use its interpretation for those articles.
 
-Both are long. Find the pages you need with search_pdf (an article number, a word or a phrase): it gives the page of every match. Then open only those pages with read_pdf. If a search finds nothing, read the table of contents (read_pdf with mode "text" on its first pages) and try other words.
-
 # Websites
 Renassur : renassur.sn; e-Senegal :e-senegal.sn
 

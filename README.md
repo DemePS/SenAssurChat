@@ -36,8 +36,8 @@ Optional extra: `uv sync --extra browser` (the agent browses the allowed sites; 
 
 ## What is specific to this app
 
-- **Documents.** The two PDFs in `library/` are long. The instructions tell the agent to find the pages with `search_pdf` (the library's tool) and to open only
-  those pages, and to use the interpretations for the articles they cover. The people's own documents (their contract) go in
+- **Documents.** The two PDFs in `library/` are long. The library's base prompt makes the agent find the pages with `search_pdf` and open only
+  those pages; the instructions tell it to use the interpretations for the articles they cover. The people's own documents (their contract) go in
   `data/users/<number>/documents/`, or in S3 under `users/<number>/documents/`.
 - **Links.** `WAXAL_LINK_DOMAINS=renassur.sn=Renassur`: the agent may share a link to Renassur only, shown under the answer and never spoken.
 - **Skills.** The three skills are loaded on demand. `register-on-partner-website` is a stub: its steps are to be written by the owner.
