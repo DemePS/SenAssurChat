@@ -12,8 +12,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Oolel-Voices through Soynade's public demo Space (WAXAL_TTS=oolel-demo): only a web client, no model
-demo = ["waxal-agent[demo]"]
 # The agent browses the allowed websites (WAXAL_LINK_DOMAINS) in a headless browser: after installing, run `playwright install chromium`
 browser = ["waxal-agent[browser]"]
 

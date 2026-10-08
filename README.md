@@ -32,8 +32,7 @@ uv run senassurchat serve                 # http://127.0.0.1:8000/?token=<WAXAL_
 ```
 
 Needs `ANTHROPIC_API_KEY` and `ELEVENLABS_API_KEY`, and ffmpeg. `DEVELOPER_MODE=1` keeps S3 and WhatsApp off, so only the test page is served.
-Optional extras: `uv sync --extra browser` (the agent browses the allowed sites; then `playwright install chromium`) and `--extra demo`
-(Oolel-Voices through Soynade's demo Space). `WHATSAPP.md` has the commands to test on WhatsApp, `docs/SANDBOX.md` the Docker sandbox.
+Optional extra: `uv sync --extra browser` (the agent browses the allowed sites; then `playwright install chromium`). `WHATSAPP.md` has the commands to test on WhatsApp, `docs/SANDBOX.md` the Docker sandbox.
 
 ## What is specific to this app
 
