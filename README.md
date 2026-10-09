@@ -20,7 +20,7 @@ folder only holds what makes the app its own:
 
 `pyproject.toml` reads the library from the folder next to this one (`[tool.uv.sources]`, editable: a change in `../WaxalAgent` is seen at
 once). For a release or Docker, pin a git commit
-(`waxal-agent[server] @ git+https://github.com/DemePS/WaxalAgent.git@<commit>`; the Dockerfile already installs the library from git).
+(`waxal-agent @ git+https://github.com/DemePS/WaxalAgent.git@<commit>`; the Dockerfile already installs the library from git).
 
 ## Try it
 

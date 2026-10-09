@@ -26,8 +26,8 @@ WORKDIR /app
 COPY pyproject.toml README.md ./
 COPY senassurchat ./senassurchat
 # The library comes from git (the local folder ../WaxalAgent used while developing is outside this build context).
-# Pin a commit for a reproducible image: --build-arg WAXAL_AGENT="waxal-agent[server] @ git+https://github.com/DemePS/WaxalAgent.git@<commit>"
-ARG WAXAL_AGENT="waxal-agent[server] @ git+https://github.com/DemePS/WaxalAgent.git"
+# Pin a commit for a reproducible image: --build-arg WAXAL_AGENT="waxal-agent @ git+https://github.com/DemePS/WaxalAgent.git@<commit>"
+ARG WAXAL_AGENT="waxal-agent @ git+https://github.com/DemePS/WaxalAgent.git"
 # The library baked into the image: the documents of this deployment (the domain: finance, medicine...). Put them in
 # ./library (or another folder, --build-arg LIBRARY=customers/acme/docs) before building. Per-person documents and
 # memory stay outside the image, in the mounted data/ volume.
