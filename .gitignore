@@ -3,6 +3,11 @@ __pycache__/
 *.pyc
 data/*
 !data/.gitkeep
+!data/skills/
+data/skills/*
+!data/instructions/
+data/instructions/*
+!data/instructions/.gitkeep
 .env
 dist/
 check_*.wav
